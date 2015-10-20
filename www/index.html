@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<!-- Designed and developed by Business Solution Apps team -->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>SmartDoctor</title>
+		<link rel="stylesheet" href="static/c.min.css" />
+		<link rel="stylesheet" href="static/jquery.mobile.icons.min.css" />
+		
+		<link rel="stylesheet" href="static/jquery.mobile-1.4.0.min.css" />
+        <script src="static/jquery-1.10.2.min.js"></script>
+        <script src="static/jquery.mobile-1.4.0.min.js"></script>
+		<script src="static/customize.js"></script>
+    
+	<style>
+		table.tbl_preview tr td { border:1px solid #5FAFAF; background-color:#EFF8F8;}
+		.ui-radio{ width:100%;}
+		.ui-controlgroup-controls{ width:100%;}
+		.ui-controlgroup-vertical{ width:200%;}
+	</style>
+    
+	<script type="text/javascript">
+		function MM_jumpMenu(targ,selObj,restore){ //v3.0
+		  eval(targ+".location='"+selObj.options[selObj.selectedIndex].value+"'");
+		  if (restore) selObj.selectedIndex=0;
+		}
+		
+		function setTotalValue(){
+			var vehicle_no=$("#vehicle_no").val();
+			var vehicle_rate=$("#vehicle_rate").val();
+			if (vehicle_rate==''){
+				vehicle_rate=0
+				}
+			var totalValue=0
+			try{
+				totalValue=eval(vehicle_no)*eval(vehicle_rate)
+			}catch(e){
+				totalValue=0
+				}
+			
+			$("#total_value").val(totalValue);
+			
+		}
+		
+		
+    </script>
+    </head>
+	
+    <body>
+		 <!--===================== pageSync ==================-->
+		<div data-theme="c" data-role="page" id="login">
+            <div data-theme="c" data-role="header" data-position="fixed">				
+				<a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
+                <h3>Authorization</h3>
+            </div>
+			
+            <div data-role="content">
+            	<div id="error_login" style="color:#B70000"></div>                
+                   					
+				<table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
+                    <!--<tr >
+                      <td style="width:30%;" ><strong style="font-size:15px; color:#008040">CID</strong></td>
+                      <td style="width:70%;" ><input id="c_id" name="c_id" type="text"  value="" ></td>              
+                    </tr>-->
+                    <tr >
+                      <td style="width:30%;" ><strong style="font-size:15px; color:#008040">UserID</strong></td>
+                      <td style="width:70%;" ><input id="user_id" name="user_id" type="number"  value="" ></td>              
+                    </tr>
+                    <tr >
+                      <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Password</strong></td>
+                      <td style="width:70%;" ><input  id="user_pass" name="user_pass"  type="number"  value="" ></td>              
+                    </tr>
+                 </table>
+                <br><br>
+                
+				<a data-role="button" id="loginButton" onClick="check_user();" >Sync</a>
+				<div align="center"><img id="wait_image_login" style="" width="50px;" src="loading.gif" alt=""></div>
+                                
+                <br>
+               
+                <!--<br><br><br><br><br><br><br><br>
+                <input name="clear_auth_check" id="clear_auth_check" data-mini="true" type="checkbox" value="Yes">
+                <label for="clear_auth_check">Confirm Clear Authorization</label>
+                
+                <a data-role="button" onClick="clear_autho();" >Clear Authorization</a>-->
+                
+                <br><br><br><br><br><br>
+                       
+            </div>
+			
+        <!-- ==========footer====== -->	
+        <div data-theme="c" data-role="footer" data-position="fixed"></div>
+        
+        </div>		
+
+
+
+<!-- =====================Home page=============== -->
+		<div data-theme="c" data-role="page" id="pageHome">
+			<div data-role="panel" id="routePanel" data-display="overlay" style="width:60%; background-color:#FFF">
+				
+				<div align="center">               
+                <br>
+				</div>
+                
+				<br><br><br><br>
+                
+				<ul data-role="listview">                    
+                    <br><br>
+                    <div style="background:#008A8A; height:1px"></div>
+                    <li ><div ><a href="#login" ><img src="sync.png"></a></div></li> 
+                    <div style="background:#008A8A; height:1px"></div>
+                </ul>
+                
+				<div style="margin:100%;"></div>
+				
+			</div><!-- /panel -->
+			
+            <div data-theme="c" data-role="header" data-position="fixed" >			
+				<a  data-role="button" href="#routePanel" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
+                <a  data-role="button" onClick="exit();" class="ui-btn-right" style="padding:4px;"><img src="exit.png" style="height:25px; width:25px;"></a>
+                <h3>Marico</h3>
+            </div>
+            
+            <div data-role="content" style="margin-top:0px; padding-top:0px">      
+            	
+                <div id="error_home_page" style="color:#B70000"></div>
+                <br>
+                <br>
+                
+                <a data-role="button" onClick="getAuction();" class="btn_auction">Auction</a>
+                                                  
+                <br>
+                <a  data-role="button" onClick="getAuctionHistory();" class="btn_auction">History</a>
+                  
+                 <br>
+                 
+                 <div align="center"><img id="wait_image_home" style="" width="50px;" src="loading.gif" alt=""></div>
+                 
+                 <br>
+             </div>	
+             
+             <br><br><br>
+			
+             <div data-theme="c" data-role="footer" data-position="fixed"></div>
+             			
+      </div>
+
+
+
+
+<!--==========================Profile====================-->
+<div data-theme="c" data-role="page" id="page_auction">
+    <div data-theme="c" data-role="header" data-position="fixed">
+        <a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
+        <a data-role="button" data-rel="back"  data-iconpos="left" class="ui-btn-right"><img src="back.png"></a>
+        <h3>Auction</h3>
+    </div>
+    
+    <div data-role="content">
+        
+        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
+        	<tr >
+              <td style="width:80%;" ><strong style="font-size:15px; color:#008040">Auction List:</strong></td><td style="width:20%;" ><div align="right"><a  data-role="button" onClick="getAuction();">Refresh</a></div></td>
+            </tr>                       
+        </table>
+                    
+         <table id="tbl_auction"  border="1" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; border-bottom:solid; border-bottom-color:#999"></table>
+                 
+        <br>
+        
+        <div id="msg_auction" style="color:#B70000"></div>   
+        <br>
+        
+    	
+        <div align="center"><img id="wait_image_auction" style="" width="50px;" src="loading.gif" alt=""></div>
+        
+    </div><!--/cont-->
+    <br>	
+    <br>
+    
+    <div data-theme="c" data-role="footer" data-position="fixed"></div>			
+ </div><!--/page-->
+ 
+ 
+ 
+<!--========================== auction details====================-->
+<div data-theme="c" data-role="page" id="page_auction_details">
+    <div data-theme="c" data-role="header" data-position="fixed">
+    <a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
+    <!--<a data-role="button" class="ui-btn-right"><img src="back.png"></a>-->
+    <a  data-role="button" onClick="refreshAuction();">Refresh</a>
+    <h3>Submit</h3>
+    </div>
+    
+    <div data-role="content">
+        <div id="msg_auction_details" style="color:#B70000"></div>
+		<div align="center"><img id="wait_image_auction_details" style="" width="50px;" src="loading.gif" alt=""></div>
+         <br>
+         <!--<div align="right"><a  data-role="button" onClick="refreshAuction();">Refresh</a></div>-->
+        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%; border:solid #8BC5C5">
+        	
+            <tr >
+              <td style="width:50%;" ><strong style="font-size:15px; font-weight:bold">Minimum Rate (Tk/Vehicle)</strong></td><td style="width:50%;" ><input id="minimum_bit_rate" name="minimum_bit_rate" type="text" style="background-color:#F27900; font-weight:bold; text-align:right" readonly ></td>
+            </tr>
+            <tr >
+              <td style="width:50%;" ><strong style="font-size:15px; font-weight:bold">Total</strong></td><td style="width:50%;" ><input  id="minimum_total" name="minimum_total"  type="text"  style="background-color:#D9ECEC; font-weight:bold; text-align:right" readonly></td>
+            </tr>
+        </table>
+         <br>
+		
+        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%; border:solid #8BC5C5">
+        	<tr >
+              <td style="width:20%;" ><strong style="font-size:15px; color:#008040">Vehicle No:</strong></td>
+              <td style="width:35%; text-align:right" ><strong style="font-size:15px; color:#008040">Rate (Tk/Vehicle)</strong></td>
+              <td style="width:45%; text-align:right" ><strong style="font-size:15px; color:#008040">Total</strong></td>
+            </tr>
+            <tr >
+              <td style="width:20%;" ><input  id="vehicle_no" name="vehicle_no"  type="number" style="background-color:#D9ECEC;" readonly></td>
+              <td style="width:35%;" ><input  id="vehicle_rate" name="vehicle_rate"  type="number" style="font-weight:bold; background-color:#97EA99; text-align:right" onKeyUp="setTotalValue()"></td>
+              <td style="width:45%;" ><input  id="total_value" name="total_value"  type="number" style="background-color:#D9ECEC; font-weight:bold; text-align:right" readonly></td>
+            </tr>
+            <tr >
+              <td style="width:20%; padding:10px" ><input type="checkbox" name="confirmSubmit" id="confirmSubmit" value="YES" style="height:30px; width:30px;"/></td>
+              <td colspan="2" style="width:80%;" ><a  data-role="button" onClick="auction_submit();" id="btn_auction_submit" >Submit</a></td>
+            </tr>
+        </table>
+                
+         <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
+        	<tr >
+              <td colspan="2" style="width:100%;" ><input id="auction_id" name="auction_id" type="hidden" style="background-color:#D9ECEC" readonly ></td>
+            </tr>            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Auction:</strong></td>
+              <td style="width:70%;" ><span id="auction_initiated"></span></td>
+            </tr>
+            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Vehicle:</strong></td>
+              <td style="width:70%;" ><span id="vehicle_type"></span></td>
+            </tr>
+            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Shipping (From-To):</strong></td>
+              <td style="width:70%;" ><span id="shipping_from"></span></td>
+            </tr>
+            
+          	<tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Delivery:</strong></td>
+              <td style="width:70%;" ><span id="delivery_date"></span></td>
+            </tr>
+            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Goods:</strong></td>
+              <td style="width:70%;" ><span id="type_of_goods"></span></td>
+            </tr>            
+         </table>
+        
+    </div><!--/cont-->
+          
+    <div data-theme="c" data-role="footer" data-position="fixed"></div>			
+ </div><!--/page-->
+ 
+ 
+ 
+<!--==========================Profile====================-->
+<div data-theme="c" data-role="page" id="page_auction_history">
+    <div data-theme="c" data-role="header" data-position="fixed">
+        <a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
+        <a data-role="button" data-rel="back"  data-iconpos="left" class="ui-btn-right"><img src="back.png"></a>
+        <h3>History</h3>
+    </div>
+    
+    <div data-role="content">
+        
+        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
+        	<tr >
+              <td style="width:80%;" ><strong style="font-size:15px; color:#008040">Auction History:</strong></td><td style="width:20%;" ><!--<div align="right"><a  data-role="button" onClick="getAuction();">Refresh</a></div>--></td>
+            </tr>                       
+        </table>
+                    
+         <table id="tbl_auction_history"  border="1" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; border-bottom:solid; border-bottom-color:#999"></table>
+                 
+        <br>
+        
+        <div id="msg_auction_history" style="color:#B70000"></div>   
+        
+    </div><!--/cont-->
+    <br>	
+    <br>
+    
+    <div data-theme="c" data-role="footer" data-position="fixed"></div>			
+ </div><!--/page-->
+ 
+ 
+<!--========================== auction details====================-->
+<div data-theme="c" data-role="page" id="page_auction_history_details">
+    <div data-theme="c" data-role="header" data-position="fixed">
+    <a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
+    <!--<a data-role="button" data-rel="back"  data-iconpos="left" class="ui-btn-right"><img src="back.png"></a>-->
+    <h3>History Details</h3>
+    </div>
+    
+    <div data-role="content">
+        
+        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%; border:solid #8BC5C5">
+        	<tr >
+              <td style="width:20%;" ><strong style="font-size:15px; color:#008040">Vehicle No:</strong></td>
+              <td style="width:35%; text-align:right" ><strong style="font-size:15px; color:#008040">Rate (Tk/Vehicle)</strong></td>
+              <td style="width:45%; text-align:right" ><strong style="font-size:15px; color:#008040">Total</strong></td>
+            </tr>
+            <tr >
+              <td style="width:20%;" ><input  id="vehicle_no_hist" name="vehicle_no_hist"  type="number" style="background-color:#D9ECEC;" readonly></td>
+              <td style="width:35%;" ><input  id="vehicle_rate_hist" name="vehicle_rate_hist"  type="number" style="font-weight:bold; background-color:#97EA99; text-align:right" onKeyUp="setTotalValue()"></td>
+              <td style="width:45%;" ><input  id="total_value_hist" name="total_value_hist"  type="number" style="background-color:#D9ECEC; font-weight:bold; text-align:right" readonly></td>
+            </tr>
+            <tr >
+              <td colspan="3" style="width:100%; text-align:center" ><strong style="font-size:18px; font-weight:bold;color:#008040">Awarded</strong></td>
+            </tr>
+        </table>
+        
+        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
+        	<tr >
+              <td colspan="2" style="width:100%;" ><input id="auction_id_hist" name="auction_id_hist" type="hidden" style="background-color:#D9ECEC" readonly ></td>
+            </tr>            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Auction:</strong></td>
+              <td style="width:70%;" ><span id="auction_initiated_hist"></span></td>
+            </tr>
+            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Vehicle:</strong></td>
+              <td style="width:70%;" ><span id="vehicle_type_hist"></span></td>
+            </tr>
+            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Shipping (From-To):</strong></td>
+              <td style="width:70%;" ><span id="shipping_from_hist"></span></td>
+            </tr>
+            
+          	<tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Delivery:</strong></td>
+              <td style="width:70%;" ><span id="delivery_date_hist"></span></td>
+            </tr>
+            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Goods:</strong></td>
+              <td style="width:70%;" ><span id="type_of_goods_hist"></span></td>
+            </tr>
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Bid Date & Time:</strong></td>
+              <td style="width:70%;" ><span id="bit_datetime_hist"></span></td>
+            </tr>            
+         </table>
+        
+    </div><!--/cont-->
+  
+    <div data-theme="c" data-role="footer" data-position="fixed"></div>			
+ </div><!--/page-->
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+<!-- ------------- Visit Success -------------------- -->
+	<div data-theme="c" data-role="page" id="page_success" >
+		<div data-theme="c" data-role="header" data-position="fixed" >
+		<a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a> 
+        <!--<a data-role="button" data-rel="back"  data-iconpos="left" class="ui-btn-right"><img src="back.png"></a>-->
+        <h3>Success</h3>
+	  </div>
+		<div data-role="content">
+        	
+            <br>			
+            <div id="success_message" style="background-image:url(result_back.png); background-repeat:no-repea; width:300px; margin:0px auto; height:200px; color:#FFF; font-size:20px; vertical-align:middle; text-align:center; padding-top:5px;" ></br>Submitted Successfully</div>
+            
+            <br>
+            <br>
+            <br>
+            <a  data-role="button" href="#pageHome" >New</a><br>
+			<br>
+			
+		</div>
+		
+		<div data-theme="c" data-role="footer" data-position="fixed" style="text-align:center"></div>	
+	</div>
+
+
+<!--========================New Appoinment==================-->
+     
+    <script type="text/javascript" src="phonegap.js"></script>
+    
+    
+    </body>
+</html>

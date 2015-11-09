@@ -1,10 +1,9 @@
 
 //online
-//var apipath_base_photo_dm='eapps001.cloudapp.net/marico/syncmobile_prescription/dm_prescription_path?HTTPPASS=e99business321cba'
+var apipath_base_photo_dm='http://eapps001.cloudapp.net/marico/syncmobile/dm_path?cid=MARICO&HTTPPASS=e99business321cba'
 
 //local
-var apipath_base_photo_dm='http://127.0.0.1:8000/marico/syncmobile/dm_path?cid=MARICO&HTTPPASS=e99business321cba'
-
+//var apipath_base_photo_dm='http://127.0.0.1:8000/marico/syncmobile/dm_path?cid=MARICO&HTTPPASS=e99business321cba'
 
 var apipath="";
 
@@ -55,6 +54,9 @@ $(document).ready(function(){
 		
 		$("#wait_image_auction_details").hide();
 		
+		$("#acution_head_id").val('');
+		$("#acution_details_id").val('');	
+	
 		//alert(localStorage.synced)
 		// -------------- If Not synced, Show login
 		if ((localStorage.synced!='YES')){	
@@ -228,10 +230,11 @@ function check_user() {
 
 
 function getAuction(){	
-	$("#error_home_page").html("")
-	
+	$("#error_home_page").html("")	
 	$("#wait_image_home").hide();
 	$(".btn_auction").show();
+	//$("#acution_head_id").val('');
+	//$("#acution_details_id").val('');	
 	
 	var rep_id=localStorage.user_id
 	if (rep_id==''||rep_id==undefined){
@@ -241,11 +244,11 @@ function getAuction(){
 		$("#wait_image_home").show();
 		$(".btn_auction").hide();
 		
-		//alert(localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&password='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code)							
+		//alert(localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code)							
 		
 		$.ajax({
 			 type: 'POST',
-			 url: localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code,
+			 url: localStorage.base_url+'get_auction_list?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code,
 			 success: function(result) {						
 					if (result==''){
 						$("#error_home_page").html('Network timeout. Please ensure you have active internet connection.');
@@ -261,23 +264,23 @@ function getAuction(){
 							
 							var result_string=resultArray[1];
 							
+							$("#tbl_auction").empty()
+							
 							var dataList=result_string.split('<rd>');
 							var dataListLength=dataList.length;
 							
 							//------------------------
-							var auctionStrData='<tr style="font-weight:bold; text-shadow:none; color:#408080;" ><td >Auction Date</td><td >Vehicle</td><td >Shipping</td><td >Details</td></tr>'
+							//auctionID+'<fd>'+auctionCategory+'<fd>'+auctionInitiatedDate+'<fd>'+auctionStart+'<fd>'+auctionEnd+'<fd>'+shortNote
+							var auctionListData='<tr style="font-size:13px;font-weight:bold; text-shadow:none; color:#408080;" ><td >ID</td><td >Auction Date & Time</td><td >Notes</td><td>&nbsp;</td></tr>'
 													
 							for (i=0; i < dataListLength; i++){
 								var auctionDataList=dataList[i].split('<fd>');
-								
-								auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</b><br>'+auctionDataList[10]+'<br>'+auctionDataList[11]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[7]+', '+auctionDataList[8]+',<br>Qty: '+auctionDataList[9]+',<br>Del:'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;"><b>'+auctionDataList[5]+'</b><br>To<br><b>'+auctionDataList[6]+'</b></td><td style="border-color:#4E9A9A;"><input type="hidden" id="aId_'+auctionDataList[0]+'" value="'+dataList[i]+'"/><a data-role="button" onClick="auction_details(\''+auctionDataList[0]+'\');" style="background-color:inherit"> >> </a></td></tr>'
-								
+								auctionListData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[0]+'</b></td><td style="border-color:#4E9A9A;"><b>'+auctionDataList[2]+'</b><br>'+auctionDataList[3]+' - '+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[5]+'</td><td style="border-color:#4E9A9A;"><a data-role="button" onClick="auction_details(\''+auctionDataList[0]+'\');" style="background-color:inherit"> >> </a></td></tr>'
 								}
 							
-							$("#tbl_auction").empty()
-							$("#tbl_auction").append(auctionStrData).trigger('create');
 							
-									
+							$("#tbl_auction").append(auctionListData).trigger('create');
+							
 							$("#msg_auction").html("");
 							$("#wait_image_home").hide();
 							$(".btn_auction").show();
@@ -303,49 +306,97 @@ function getAuction(){
 	}
 }
 
-
 function auction_details(actionId){		
 		$("#wait_image_auction_details").hide();
 		$("#msg_auction_details").html("")
 		$("#btn_auction_submit").show();
 		$("#confirmSubmit").show();
+		$("#acution_head_id_show").html("");
+		$("#auction_date_show").html("");
+		$("#auction_time_show").html("");
 		
-		$("#auction_id").val("");
-		$("#vehicle_rate").val("");
-		$("#total_value").val("");
 		
 		$("input[name='confirmSubmit']:checked").attr('checked',false);
 		
-		
-		var acutionData=$("#aId_"+actionId).val();
-		var auctionDataList=acutionData.split('<fd>');
-		<!--0 auctionID+'<fd>1'+auctionInitiatedDate+'<fd>2'+auctionCategory+'<fd>3'+shortNote+'<fd>4'+dateOfDelivery+'<fd>5'+shippingFrom+'<fd>6'+shippingTo+'<fd>7'+vehicleType+'<fd>8'+vehicleCapacity+'<fd>9'+vehicleQty+'<fd>10'+auctionStart+'<fd>11'+auctionEnd+'<fd>12'+typeofGoods+'<fd>13'+grossWeight+'<fd>14'+vendorCategory+'<fd>15'+pONo+'<fd>16'+minimumBidInterval-->
-		if(auctionDataList.length!=18){
+		if(actionId==''){
 			$("#msg_auction").html("Error in detail show")			
 		}else{
+			
+			//alert(localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+actionId)							
 		
-			$("#auction_id").val(auctionDataList[0]);
-			$("#vehicle_no").val(auctionDataList[9]);
-			
-			$("#auction_initiated").html(auctionDataList[1]+' <br>'+ auctionDataList[10] +' - '+ auctionDataList[11]);
-			$("#vehicle_type").html(auctionDataList[7]+', '+auctionDataList[8]);			
-			$("#delivery_date").html(auctionDataList[4]);
-			$("#shipping_from").html(auctionDataList[5]+' (To)<br> '+auctionDataList[6]);			
-			$("#type_of_goods").html(auctionDataList[12]);
-			
-			
-			$("#vehicle_rate").val("");		
-			$("#total_value").val("");
-			
-			var minimumTotal=0
-			try{
-				minimumTotal=eval(auctionDataList[9])*eval(auctionDataList[17])
-			}catch(e){
-				minimumTotal=0
-				}
-			
-			$("#minimum_bit_rate").val(auctionDataList[17]);
-			$("#minimum_total").val(minimumTotal);
+			$.ajax({
+				 type: 'POST',
+				 url: localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+actionId,
+				 success: function(result) {						
+						if (result==''){
+							$("#msg_auction_details").html('Network timeout. Please ensure you have active internet connection.');
+							$("#wait_image_auction_details").hide();
+							$(".btn_auction").show();
+						}else{
+							var resultArray = result.split('<SYNCDATA>');			
+							if (resultArray[0]=='FAILED'){						
+								$("#msg_auction_details").html(resultArray[1]);
+								$("#wait_image_auction_details").hide();
+								$(".btn_auction").show();
+							}else if (resultArray[0]=='SUCCESS'){
+								
+								var head_string=resultArray[1];
+								var details_string=resultArray[2];
+								
+								var headList=head_string.split('<fd>');
+								//0 auctionID+'<fd>1'+auctionCategory+'<fd>2'+auctionInitiatedDate+'<fd>3'+auctionStart+'<fd>4'+auctionEnd+'<fd>5'+shortNote
+								$("#acution_head_id").val(headList[0]);								
+								$("#acution_head_id_show").html(headList[0]);
+								$("#auction_date_show").html(headList[2]);
+								$("#auction_time_show").html(headList[3]+'-'+headList[4]);
+								
+								$("#tbl_auction_details").empty()
+								
+								var dataList=details_string.split('<rd>');
+								var dataListLength=dataList.length;
+								
+								//------------------------
+								//0 auctionRouteID+'<fd>1'+dateOfDelivery+'<fd>2'+shippingFrom+'<fd>3'+shippingTo+'<fd>4'+vehicleType+'<fd>5'+vehicleCapacity+'<fd>6'+vehicleQty+'<fd>7'+typeofGoods+'<fd>8'+pONo+'<fd>9'+str(minBitRate)+'<fd>10'+str(lastBitRate)
+								
+								var detailSl=''
+								var auctionStrData='<tr style="font-size:13px;font-weight:bold; text-shadow:none; color:#408080;" ><td >Delivery Date</td><td >Route</td><td >Vehicle Type</td><td >Number Of Vehicle</td><td>Bid/Per Vehicle</td><td style="text-align:right;"> Min Rate</td></tr>'
+								for (i=0; i < dataListLength; i++){
+									var auctionDataList=dataList[i].split('<fd>');
+									auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[2]+' <b>To</b> '+auctionDataList[3]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;text-align:center">'+auctionDataList[6]+' / '+auctionDataList[5]+'MT</td><td style="border-color:#4E9A9A;"><input type="number" id="routeIdRate_'+auctionDataList[0]+'" value="'+auctionDataList[10]+'" style="text-align:right;font-weight:bold;font-size:14px;"/></td><td style="border-color:#4E9A9A;text-align:right;"><span id="routeIdMinRateShow_'+auctionDataList[0]+'">'+auctionDataList[9]+'</span><input type="hidden" id="routeIdMinRate_'+auctionDataList[0]+'" value="'+auctionDataList[9]+'" style="text-align:right;font-weight:bold;font-size:14px;"/></td></tr>'
+									
+									if (detailSl==''){
+											detailSl=auctionDataList[0];
+										}else{
+											detailSl+=','+auctionDataList[0];
+										}									
+									}
+								
+								$("#acution_details_id").val(detailSl);	
+								
+								$("#tbl_auction_details").append(auctionStrData).trigger('create');
+								
+								
+								$("#msg_auction_details").html("");
+								$("#wait_image_auction_details").hide();
+								$(".btn_auction").show();
+								
+								//--------------------------
+								url = "#page_auction_details";
+								$.mobile.navigate(url);	
+								
+							}else{						
+								$("#msg_auction_details").html('Authentication error. Please register and sync to retry.');
+								$("#wait_image_auction_details").hide();
+								$(".btn_auction").show();
+								}
+						}
+					  },
+				  error: function(result) {			  
+					  $("#msg_auction_details").html('Invalid Request'); 
+					  $("#wait_image_auction_details").hide();
+					  $(".btn_auction").show();
+				  }
+				  });//end ajax
 			
 			//--------------------------	
 			url = "#page_auction_details";
@@ -360,73 +411,137 @@ function auction_submit(){
 	$("#btn_auction_submit").show();	
 	$("#confirmSubmit").show();
 	
-	var auction_id=$("#auction_id").val();
-	var vehicle_rate=$("#vehicle_rate").val();
-	var minimum_bit_rate=$("#minimum_bit_rate").val();
+	var acution_head_id=$("#acution_head_id").val();
+	
+	var acution_details_id=$("#acution_details_id").val();	
+	var detailsIdList=acution_details_id.split(',')
+	var listLength=detailsIdList.length;
+	
+	var routeRateStr=''
+	var bidRate=0
+	var minRate=0
+	var rateFlag=true
+	var rateFlagMsg=''
+	for (i=0; i < listLength; i++){		
+		try{
+			bidRate=eval($("#routeIdRate_"+detailsIdList[i]).val());
+			minRate=eval($("#routeIdMinRate_"+detailsIdList[i]).val());			
+			if (bidRate<=0){
+				bidRate=0
+			}		
+		}catch(e){
+			bidRate=0
+		}
+		//--------------
+		if(minRate>0 && bidRate>=minRate){
+			rateFlag=false;
+			rateFlagMsg='<b>'+bidRate +'</b> should be less than min rate <b>'+ minRate+'</b>';
+			break;		
+		}
+		//------------
+		if (bidRate>0){		
+			if (routeRateStr==''){
+				routeRateStr=detailsIdList[i]+'<fd>'+bidRate;
+			}else{
+				routeRateStr+='<rd>'+detailsIdList[i]+'<fd>'+bidRate;
+			}		
+		}
+	}
 	
 	var confirmStatus=$("input[name='confirmSubmit']:checked").val();
-		
-	if (auction_id==''){		
-		$("#msg_auction_details").text("Required Auction");
+	if (confirmStatus!='YES'){
+		$("#msg_auction_details").text("Required Checked Confirmation");
 	}else{
-		
-		if (vehicle_rate=='' || vehicle_rate<=0){
-			$("#msg_auction_details").html('Required valid rate');
-		
-		}else{			
-			if (minimum_bit_rate > 0 && (minimum_bit_rate<=vehicle_rate)){
-				$("#msg_auction_details").html('Rate should be less than Minimum Rate');
-			
-			}else{
-				if (confirmStatus!='YES'){
-					$("#msg_auction_details").text("Required Checked Confirmation");
-				}else{
+		if (acution_head_id==''){
+			$("#msg_auction_details").text("Auction not available");
+		}else{
+			if (rateFlag == false){
+				$("#msg_auction_details").html(rateFlagMsg);					
+			}else{			
+				if (routeRateStr==''){
+					$("#msg_auction_details").html('Required valid rate');
+				}else{								
 					$("#wait_image_auction_details").show();
-					$("#btn_auction_submit").hide();
-					$("#confirmSubmit").hide();
+					//$("#btn_auction_submit").hide();
+					//$("#confirmSubmit").hide();
 					
-					//alert(localStorage.base_url+'auction_submit?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+encodeURIComponent(auction_id)+'&vehicle_rate='+vehicle_rate)							
+					//alert(localStorage.base_url+'auction_submit?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+acution_head_id+'&route_rate='+encodeURIComponent(routeRateStr)+'&acution_details_id='+encodeURIComponent(acution_details_id))							
 					
 					$.ajax({
 						 type: 'POST',
-						 url: localStorage.base_url+'auction_submit?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+encodeURIComponent(auction_id)+'&vehicle_rate='+vehicle_rate,
+						 url: localStorage.base_url+'auction_submit?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+acution_head_id+'&route_rate='+encodeURIComponent(routeRateStr)+'&acution_details_id='+encodeURIComponent(acution_details_id),
 						 success: function(result) {						
 								if (result==''){
 									$("#msg_auction_details").html('Network timeout. Please ensure you have active internet connection.');
 									$("#wait_image_auction_details").hide();
-									$("#btn_auction_submit").show();
-									$("#confirmSubmit").show();
+									//$("#btn_auction_submit").show();
+									//$("#confirmSubmit").show();
 								}else{
 									var resultArray = result.split('<SYNCDATA>');			
 									if (resultArray[0]=='FAILED'){						
 										$("#msg_auction_details").html(resultArray[1]);
 										$("#wait_image_auction_details").hide();
-										$("#btn_auction_submit").show();
-										$("#confirmSubmit").show();
+										//$("#btn_auction_submit").show();
+										//$("#confirmSubmit").show();
+										
+										var minBidStr=resultArray[2];
+										//-------------
+										if(minBidStr!=''){
+											var minBidList=minBidStr.split('<rd>');
+											var minBidListLength=minBidList.length;
+																
+											var routeId=''
+											var routeMinValue=''
+											for (i=0; i < minBidListLength; i++){
+												var minBidDataList=minBidList[i].split('<fd>');
+												routeId=minBidDataList[0];
+												routeMinValue=minBidDataList[1];											
+												$("#routeIdMinRate_"+routeId).val(routeMinValue);
+												$("#routeIdMinRateShow_"+routeId).html(routeMinValue);												
+											}
+										}
+										
 									}else if (resultArray[0]=='SUCCESS'){									
 										var result_string=resultArray[1];
+										var minBidStr=resultArray[2];
 										
-										$("#msg_auction_details").html(result_string);
+										//-------------
+										var minBidList=minBidStr.split('<rd>');
+										var minBidListLength=minBidList.length;
+																			
+										var routeId=''
+										var routeMinValue=''
+										for (i=0; i < minBidListLength; i++){
+											var minBidDataList=minBidList[i].split('<fd>');
+											routeId=minBidDataList[0];
+											routeMinValue=minBidDataList[1];
+											
+											$("#routeIdMinRate_"+routeId).val(routeMinValue);
+											$("#routeIdMinRateShow_"+routeId).html(routeMinValue);	
+											
+										}
 										
+										//----------------
+										$("#msg_auction_details").html(result_string);										
 										$("#wait_image_auction_details").hide();
-										$("#btn_auction_submit").hide();
-										$("#confirmSubmit").hide();
+										//$("#btn_auction_submit").hide();
+										//$("#confirmSubmit").hide();
 										
 										//--------------------------
 										
 									}else{						
 										$("#msg_auction_details").html('Authentication error. Please register and sync to retry.');
 										$("#wait_image_auction_details").hide();
-										$("#btn_auction_submit").show();
-										$("#confirmSubmit").show();
+										//$("#btn_auction_submit").show();
+										//$("#confirmSubmit").show();
 										}
 								}
 							  },
 						  error: function(result) {			  
 							  $("#msg_auction_details").html('Invalid Request'); 
 							  $("#wait_image_auction_details").hide();
-							  $("#btn_auction_submit").show();
-							  $("#confirmSubmit").show();
+							  //$("#btn_auction_submit").show();
+							 // $("#confirmSubmit").show();
 						  }
 						  });//end ajax
 				   }
@@ -436,106 +551,20 @@ function auction_submit(){
 	//}
 }
 
-
-
 function refreshAuction(){	
 	$("#msg_auction_details").html("")	
 	$("#wait_image_auction_details").hide();	
 	$("#btn_auction_submit").show();
 	$("#confirmSubmit").show();
-							
-	var auction_id=$("#auction_id").val();
 	
+	var acution_head_id=$("#acution_head_id").val();
 	
-	var rep_id=localStorage.user_id
-	if (rep_id==''||rep_id==undefined){
-		$("#msg_auction_details").html("Required Sync")
-	}else{
-		
-		$("#wait_image_auction_details").show();
-		$("#btn_auction_submit").hide();
-		$("#confirmSubmit").hide();
-							  
-		//alert(localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&password='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code)							
-		
-		$.ajax({
-			 type: 'POST',
-			 url: localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code,
-			 success: function(result) {						
-					if (result==''){
-						$("#msg_auction_details").html('Network timeout. Please ensure you have active internet connection.');
-						$("#wait_image_auction_details").hide();
-						$("#btn_auction_submit").show();
-						$("#confirmSubmit").show();
-					}else{
-						var resultArray = result.split('<SYNCDATA>');			
-						if (resultArray[0]=='FAILED'){						
-							$("#msg_auction_details").html(resultArray[1]);
-							$("#wait_image_auction_details").hide();
-							$("#btn_auction_submit").show();
-							$("#confirmSubmit").show();
-						}else if (resultArray[0]=='SUCCESS'){
-							
-							var result_string=resultArray[1];
-							
-							var dataList=result_string.split('<rd>');
-							var dataListLength=dataList.length;
-							
-							//------------------------
-							var auctionStrData='<tr style="font-weight:bold; text-shadow:none; color:#408080;" ><td >Auction Date</td><td >Vehicle</td><td >Shipping</td><td >Details</td></tr>'
-													
-							for (i=0; i < dataListLength; i++){
-								var auctionDataList=dataList[i].split('<fd>');
-								
-								auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</b><br>'+auctionDataList[10]+'<br>'+auctionDataList[11]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[7]+', '+auctionDataList[8]+',<br>Qty: '+auctionDataList[9]+',<br>Del:'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;"><b>'+auctionDataList[5]+'</b><br>To<br><b>'+auctionDataList[6]+'</b></td><td style="border-color:#4E9A9A;"><input type="hidden" id="aId_'+auctionDataList[0]+'" value="'+dataList[i]+'"/><a data-role="button" onClick="auction_details(\''+auctionDataList[0]+'\');" style="background-color:inherit"> >> </a></td></tr>'
-								
-								}
-							
-							$("#tbl_auction").empty()
-							$("#tbl_auction").append(auctionStrData).trigger('create');
-							
-							
-							$("#msg_auction_details").html("");
-							$("#wait_image_auction_details").hide();
-							$("#btn_auction_submit").show();
-							$("#confirmSubmit").show();
-							
-							
-							//alert(auction_id);
-							
-							auction_details(auction_id)
-							
-							
-							//--------------------------
-							url = "#page_auction";
-							//$.mobile.navigate(url);	
-							
-						}else{						
-							$("#msg_auction_details").html('Authentication error. Please register and sync to retry.');
-							$("#wait_image_auction_details").hide();
-							$("#btn_auction_submit").show();
-							$("#confirmSubmit").show();
-							}
-					}
-				  },
-			  error: function(result) {			  
-					$("#msg_auction_details").html('Invalid Request'); 
-					$("#wait_image_auction_details").hide();
-					$("#btn_auction_submit").show();
-					$("#confirmSubmit").show();
-			  }
-			  });//end ajax
-		
-	}
+	auction_details(acution_head_id);	
 }
-
-
-
-
 
 function getAuctionHistory(){	
 	$("#error_home_page").html("")
-		
+	$("#wait_image_auction_history").hide();
 	
 	$("#wait_image_home").hide();
 	$(".btn_auction").show();
@@ -572,13 +601,11 @@ function getAuctionHistory(){
 							var dataListLength=dataList.length;
 							
 							//------------------------
-							var auctionStrData='<tr style="font-weight:bold; text-shadow:none; color:#408080;" ><td >Auction Date</td><td >Vehicle</td><td >Shipping</td><td >Details</td></tr>'
+							var auctionStrData='<tr style="font-size:13px;font-weight:bold; text-shadow:none; color:#408080;" ><td >ID</td><td >Auction Date & Time</td><td >Notes</td><td>&nbsp;</td></tr>'
 													
 							for (i=0; i < dataListLength; i++){
 								var auctionDataList=dataList[i].split('<fd>');
-								
-								auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</b><br>'+auctionDataList[10]+'<br>'+auctionDataList[11]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[7]+', '+auctionDataList[8]+',<br>Qty: '+auctionDataList[9]+',<br>Del:'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;"><b>'+auctionDataList[5]+'</b><br>To<br><b>'+auctionDataList[6]+'</b></td><td style="border-color:#4E9A9A;"><input type="hidden" id="aHisId_'+auctionDataList[0]+'" value="'+dataList[i]+'"/><a data-role="button" onClick="auction_history_details(\''+auctionDataList[0]+'\');" style="background-color:inherit"> >> </a></td></tr>'
-								
+								auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[0]+'</b></td><td style="border-color:#4E9A9A;"><b>'+auctionDataList[2]+'</b><br>'+auctionDataList[3]+' - '+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[5]+'</td><td style="border-color:#4E9A9A;"><input type="hidden" id="aHisId_'+auctionDataList[0]+'" value="'+dataList[i]+'"/><a data-role="button" onClick="auction_history_details(\''+auctionDataList[0]+'\');" style="background-color:inherit"> >> </a></td></tr>'
 								}
 							
 							$("#tbl_auction_history").empty()
@@ -611,39 +638,82 @@ function getAuctionHistory(){
 }
 
 
-function auction_history_details(actionId){		
+function auction_history_details(actionId){
+		$("#wait_image_auction_history").hide();
+		$("#msg_auction_history").html("")
 				
-		var acutionData=$("#aHisId_"+actionId).val();
-		var auctionDataList=acutionData.split('<fd>');
-		<!--0 auctionID+'<fd>1'+auctionInitiatedDate+'<fd>2'+auctionCategory+'<fd>3'+shortNote+'<fd>4'+dateOfDelivery+'<fd>5'+shippingFrom+'<fd>6'+shippingTo+'<fd>7'+vehicleType+'<fd>8'+vehicleCapacity+'<fd>9'+vehicleQty+'<fd>10'+auctionStart+'<fd>11'+auctionEnd+'<fd>12'+typeofGoods+'<fd>13'+grossWeight+'<fd>14'+vendorCategory+'<fd>15'+pONo+'<fd>16'+minimumBidInterval+'<fd>17'+str(bidDateTime)+'<fd>18'+str(bidRate)-->
-		if(auctionDataList.length!=19){
+		$("#acution_history_head_id_show").html("");
+		$("#auction_history_date_show").html("");
+		$("#auction_history_time_show").html("");
+				
+		if(actionId==''){
 			$("#msg_auction_history").html("Error in detail show")			
-		}else{			
-			$("#auction_id_hist").val(auctionDataList[0]);
-			$("#vehicle_no_hist").val(auctionDataList[9]);
+		}else{
+			var acutionData=$("#aHisId_"+actionId).val();
 			
-			$("#auction_initiated_hist").html(auctionDataList[1]+' <br>'+ auctionDataList[10] +' - '+ auctionDataList[11]);
-			$("#vehicle_type_hist").html(auctionDataList[7]+', '+auctionDataList[8]);			
-			$("#delivery_date_hist").html(auctionDataList[4]);
-			$("#shipping_from_hist").html(auctionDataList[5]+' (To)<br> '+auctionDataList[6]);			
-			$("#type_of_goods_hist").html(auctionDataList[12]);
-			$("#bit_datetime_hist").html(auctionDataList[17]);
+			//alert(localStorage.base_url+'get_auction_history_details?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+actionId)							
+		
+			$.ajax({
+				 type: 'POST',
+				 url: localStorage.base_url+'get_auction_history_details?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+actionId,
+				 success: function(result) {						
+						if (result==''){
+							$("#msg_auction_history").html('Network timeout. Please ensure you have active internet connection.');
+							$("#wait_image_auction_history").hide();
+							
+						}else{
+							var resultArray = result.split('<SYNCDATA>');			
+							if (resultArray[0]=='FAILED'){						
+								$("#msg_auction_history").html(resultArray[1]);
+								$("#wait_image_auction_history").hide();
+								
+							}else if (resultArray[0]=='SUCCESS'){
+								
+								var details_string=resultArray[1];
+								
+								var auctionDataList=acutionData.split('<fd>');
+								//0 auctionID+'<fd>1'+auctionCategory+'<fd>2'+auctionInitiatedDate+'<fd>3'+auctionStart+'<fd>4'+auctionEnd+'<fd>5'+shortNote
+								
+								$("#acution_history_head_id_show").html(auctionDataList[0]);
+								$("#auction_history_date_show").html(auctionDataList[2]);
+								$("#auction_history_time_show").html(auctionDataList[3]+'-'+auctionDataList[4]);
+								
+								$("#tbl_auction_history_details").empty()
+								
+								var dataList=details_string.split('<rd>');
+								var dataListLength=dataList.length;
+								
+								//------------------------
+								//0 auctionRouteID+'<fd>1'+dateOfDelivery+'<fd>2'+shippingFrom+'<fd>3'+shippingTo+'<fd>4'+vehicleType+'<fd>5'+vehicleCapacity+'<fd>6'+vehicleQty+'<fd>7'+typeofGoods+'<fd>8'+pONo+'<fd>9'+str(minBitRate)
+								
+								var auctionStrData='<tr style="font-size:13px;font-weight:bold; text-shadow:none; color:#408080;" ><td >Delivery Date</td><td >Route</td><td >Vehicle Type</td><td >Number Of Vehicle</td><td style="text-align:right;">Bid/Per Vehicle</td><td style="text-align:right;">Status</td></tr>'
+								for (i=0; i < dataListLength; i++){
+									var auctionDataList=dataList[i].split('<fd>');
+									auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[2]+' <b>To</b> '+auctionDataList[3]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;text-align:center">'+auctionDataList[6]+' / '+auctionDataList[5]+'MT</td><td style="border-color:#4E9A9A;text-align:right;">'+auctionDataList[9]+'</td><td style="border-color:#4E9A9A;text-align:right;color:#008040">Awarded</td></tr>'																	
+									}
+								
+								$("#tbl_auction_history_details").append(auctionStrData).trigger('create');
+								
+								$("#msg_auction_history").html("");
+								$("#wait_image_auction_history").hide();
+																
+								//--------------------------
+								url = "#page_auction_history_details";
+								$.mobile.navigate(url);	
+								
+							}else{						
+								$("#msg_auction_history").html('Authentication error. Please register and sync to retry.');
+								$("#wait_image_auction_history").hide();
+								
+								}
+						}
+					  },
+				  error: function(result) {			  
+					  $("#msg_auction_history").html('Invalid Request'); 
+					  $("#wait_image_auction_history").hide();					 
+				  }
+			});//end ajax
 			
-			
-			var minimumTotal=0
-			try{
-				minimumTotal=eval(auctionDataList[9])*eval(auctionDataList[18])
-			}catch(e){
-				minimumTotal=0
-				}			
-			
-			$("#vehicle_rate_hist").val(auctionDataList[18]);		
-			$("#total_value_hist").val(minimumTotal);
-			
-			
-			//--------------------------	
-			url = "#page_auction_history_details";
-			$.mobile.navigate(url);
 		}
 }
 

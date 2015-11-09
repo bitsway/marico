@@ -197,66 +197,29 @@
     <div data-role="content">
         <div id="msg_auction_details" style="color:#B70000"></div>
 		<div align="center"><img id="wait_image_auction_details" style="" width="50px;" src="loading.gif" alt=""></div>
-         <br>
-         <!--<div align="right"><a  data-role="button" onClick="refreshAuction();">Refresh</a></div>-->
+         
         <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%; border:solid #8BC5C5">
         	
             <tr >
-              <td style="width:50%;" ><strong style="font-size:15px; font-weight:bold">Minimum Rate (Tk/Vehicle)</strong></td><td style="width:50%;" ><input id="minimum_bit_rate" name="minimum_bit_rate" type="text" style="background-color:#F27900; font-weight:bold; text-align:right" readonly ></td>
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Auction ID&nbsp;&nbsp;&nbsp;&nbsp;:</strong></td>
+              <td style="width:70%;" ><span id="acution_head_id_show"></span><input type="hidden" id="acution_head_id" name="acution_head_id" value="" readonly/><input type="hidden" id="acution_details_id" name="acution_details_id" value="" readonly/></td>
             </tr>
             <tr >
-              <td style="width:50%;" ><strong style="font-size:15px; font-weight:bold">Total</strong></td><td style="width:50%;" ><input  id="minimum_total" name="minimum_total"  type="text"  style="background-color:#D9ECEC; font-weight:bold; text-align:right" readonly></td>
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Date & Time:</strong></td>
+              <td style="width:70%;" ><span id="auction_date_show"></span> [<span id="auction_time_show"></span>]</td>
             </tr>
+            
         </table>
-         <br>
-		
+        <br>
+        
+		<table id="tbl_auction_details"  border="1" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; border-bottom:solid; border-bottom-color:#999"></table>
         <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%; border:solid #8BC5C5">
-        	<tr >
-              <td style="width:20%;" ><strong style="font-size:15px; color:#008040">Vehicle No:</strong></td>
-              <td style="width:35%; text-align:right" ><strong style="font-size:15px; color:#008040">Rate (Tk/Vehicle)</strong></td>
-              <td style="width:45%; text-align:right" ><strong style="font-size:15px; color:#008040">Total</strong></td>
-            </tr>
-            <tr >
-              <td style="width:20%;" ><input  id="vehicle_no" name="vehicle_no"  type="number" style="background-color:#D9ECEC;" readonly></td>
-              <td style="width:35%;" ><input  id="vehicle_rate" name="vehicle_rate"  type="number" style="font-weight:bold; background-color:#97EA99; text-align:right" onKeyUp="setTotalValue()"></td>
-              <td style="width:45%;" ><input  id="total_value" name="total_value"  type="number" style="background-color:#D9ECEC; font-weight:bold; text-align:right" readonly></td>
-            </tr>
+        	
             <tr >
               <td style="width:20%; padding:10px" ><input type="checkbox" name="confirmSubmit" id="confirmSubmit" value="YES" style="height:30px; width:30px;"/></td>
               <td colspan="2" style="width:80%;" ><a  data-role="button" onClick="auction_submit();" id="btn_auction_submit" >Submit</a></td>
             </tr>
         </table>
-                
-         <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
-        	<tr >
-              <td colspan="2" style="width:100%;" ><input id="auction_id" name="auction_id" type="hidden" style="background-color:#D9ECEC" readonly ></td>
-            </tr>            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Auction:</strong></td>
-              <td style="width:70%;" ><span id="auction_initiated"></span></td>
-            </tr>
-            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Vehicle:</strong></td>
-              <td style="width:70%;" ><span id="vehicle_type"></span></td>
-            </tr>
-            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Shipping (From-To):</strong></td>
-              <td style="width:70%;" ><span id="shipping_from"></span></td>
-            </tr>
-            
-          	<tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Delivery:</strong></td>
-              <td style="width:70%;" ><span id="delivery_date"></span></td>
-            </tr>
-            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Goods:</strong></td>
-              <td style="width:70%;" ><span id="type_of_goods"></span></td>
-            </tr>            
-         </table>
-        
     </div><!--/cont-->
           
     <div data-theme="c" data-role="footer" data-position="fixed"></div>			
@@ -273,7 +236,8 @@
     </div>
     
     <div data-role="content">
-        
+         <div align="center"><img id="wait_image_auction_history" style="" width="50px;" src="loading.gif" alt=""></div>
+         
         <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
         	<tr >
               <td style="width:80%;" ><strong style="font-size:15px; color:#008040">Auction History:</strong></td><td style="width:20%;" ><!--<div align="right"><a  data-role="button" onClick="getAuction();">Refresh</a></div>--></td>
@@ -298,61 +262,27 @@
 <div data-theme="c" data-role="page" id="page_auction_history_details">
     <div data-theme="c" data-role="header" data-position="fixed">
     <a  data-role="button" href="#pageHome" class="ui-btn-left ui-btn-icon-notext"><img src="menu.png"></a>
-    <!--<a data-role="button" data-rel="back"  data-iconpos="left" class="ui-btn-right"><img src="back.png"></a>-->
+    <a data-role="button" data-rel="back"  data-iconpos="left" class="ui-btn-right"><img src="back.png"></a>
     <h3>History Details</h3>
     </div>
     
     <div data-role="content">
         
         <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%; border:solid #8BC5C5">
-        	<tr >
-              <td style="width:20%;" ><strong style="font-size:15px; color:#008040">Vehicle No:</strong></td>
-              <td style="width:35%; text-align:right" ><strong style="font-size:15px; color:#008040">Rate (Tk/Vehicle)</strong></td>
-              <td style="width:45%; text-align:right" ><strong style="font-size:15px; color:#008040">Total</strong></td>
+        	
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Auction ID&nbsp;&nbsp;&nbsp;&nbsp;:</strong></td>
+              <td style="width:70%;" ><span id="acution_history_head_id_show"></span></td>
             </tr>
             <tr >
-              <td style="width:20%;" ><input  id="vehicle_no_hist" name="vehicle_no_hist"  type="number" style="background-color:#D9ECEC;" readonly></td>
-              <td style="width:35%;" ><input  id="vehicle_rate_hist" name="vehicle_rate_hist"  type="number" style="font-weight:bold; background-color:#97EA99; text-align:right" onKeyUp="setTotalValue()"></td>
-              <td style="width:45%;" ><input  id="total_value_hist" name="total_value_hist"  type="number" style="background-color:#D9ECEC; font-weight:bold; text-align:right" readonly></td>
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Date & Time:</strong></td>
+              <td style="width:70%;" ><span id="auction_history_date_show"></span> [<span id="auction_history_time_show"></span>]</td>
             </tr>
-            <tr >
-              <td colspan="3" style="width:100%; text-align:center" ><strong style="font-size:18px; font-weight:bold;color:#008040">Awarded</strong></td>
-            </tr>
+            
         </table>
+        <br>
         
-        <table  border="0" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; font-size:98%;">
-        	<tr >
-              <td colspan="2" style="width:100%;" ><input id="auction_id_hist" name="auction_id_hist" type="hidden" style="background-color:#D9ECEC" readonly ></td>
-            </tr>            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Auction:</strong></td>
-              <td style="width:70%;" ><span id="auction_initiated_hist"></span></td>
-            </tr>
-            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Vehicle:</strong></td>
-              <td style="width:70%;" ><span id="vehicle_type_hist"></span></td>
-            </tr>
-            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Shipping (From-To):</strong></td>
-              <td style="width:70%;" ><span id="shipping_from_hist"></span></td>
-            </tr>
-            
-          	<tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Delivery:</strong></td>
-              <td style="width:70%;" ><span id="delivery_date_hist"></span></td>
-            </tr>
-            
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Goods:</strong></td>
-              <td style="width:70%;" ><span id="type_of_goods_hist"></span></td>
-            </tr>
-            <tr >
-              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Bid Date & Time:</strong></td>
-              <td style="width:70%;" ><span id="bit_datetime_hist"></span></td>
-            </tr>            
-         </table>
+		<table id="tbl_auction_history_details"  border="1" class="ui-body-d ui-shadow table-stripe ui-responsive" data-role="table" data-theme="d"  data-mode="display:none" style="cell-spacing:0px; width:100%; border-bottom:solid; border-bottom-color:#999"></table>
         
     </div><!--/cont-->
   

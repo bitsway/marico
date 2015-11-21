@@ -14,7 +14,7 @@ var longitude="";
 function getLocation() {
 	$("#msg_auction_details").html("Confirming location. Please wait.");	
 	/*var options = { enableHighAccuracy: false};
-	navigator.geolocation.getCurrentPosition(onSuccess, onError , options);*/	
+	navigator.geolocation.getCurrentPosition(onSuccess, onError , options);*/
 }
 
 // onSuccess Geolocation
@@ -285,6 +285,15 @@ function getAuction(){
 							$("#wait_image_home").hide();
 							$(".btn_auction").show();
 							
+							
+							/*
+							
+							$("#acution_head_id_show").html("");
+							$("#auction_date_show").html("");
+							$("#auction_time_show").html("");
+							$("#tbl_auction_details").empty()
+							$("#acution_head_id").val("");*/	
+							
 							//--------------------------
 							url = "#page_auction";
 							$.mobile.navigate(url);	
@@ -314,12 +323,19 @@ function auction_details(actionId){
 		$("#acution_head_id_show").html("");
 		$("#auction_date_show").html("");
 		$("#auction_time_show").html("");
-		
+		$("#auction_count_down_show").html("");
+		$("#auction_count_down_show").show();
 		
 		$("input[name='confirmSubmit']:checked").attr('checked',false);
 		
 		if(actionId==''){
-			$("#msg_auction").html("Error in detail show")			
+			$("#msg_auction").html("Auction not available")
+			$("#msg_auction_details").html("Auction not available");	
+			$("#btn_auction_submit").hide()
+			$("#confirmSubmit").hide()
+			$("#auction_count_down_show").hide();
+			$("#tbl_auction_details").empty()
+			
 		}else{
 			
 			//alert(localStorage.base_url+'get_auction?cid='+localStorage.c_id+'&rep_id='+localStorage.user_id+'&rep_pass='+encodeURIComponent(localStorage.user_pass)+'&synccode='+localStorage.sync_code+'&auction_id='+actionId)							
@@ -334,21 +350,45 @@ function auction_details(actionId){
 							$(".btn_auction").show();
 						}else{
 							var resultArray = result.split('<SYNCDATA>');			
-							if (resultArray[0]=='FAILED'){						
+							if (resultArray[0]=='FAILED1'){						
 								$("#msg_auction_details").html(resultArray[1]);
 								$("#wait_image_auction_details").hide();
 								$(".btn_auction").show();
+								
+								$("#acution_head_id").val("");	
+								$("#btn_auction_submit").hide()
+								$("#confirmSubmit").hide()
+								$("#auction_count_down_show").hide();
+								$("#tbl_auction_details").empty()
+									
+							}else if (resultArray[0]=='FAILED'){						
+								$("#msg_auction_details").html(resultArray[1]);
+								$("#wait_image_auction_details").hide();
+								$(".btn_auction").show();
+								
 							}else if (resultArray[0]=='SUCCESS'){
 								
 								var head_string=resultArray[1];
 								var details_string=resultArray[2];
 								
 								var headList=head_string.split('<fd>');
-								//0 auctionID+'<fd>1'+auctionCategory+'<fd>2'+auctionInitiatedDate+'<fd>3'+auctionStart+'<fd>4'+auctionEnd+'<fd>5'+shortNote
+								//0 auctionID+'<fd>1'+auctionCategory+'<fd>2'+auctionInitiatedDate+'<fd>3'+auctionStart+'<fd>4'+auctionEnd+'<fd>5'+shortNote+'<fd>6'+auctionStartDateTime+'<fd>7'+auctionEndDateTime+'<fd>8'+dateFlag
 								$("#acution_head_id").val(headList[0]);								
 								$("#acution_head_id_show").html(headList[0]);
 								$("#auction_date_show").html(headList[2]);
 								$("#auction_time_show").html(headList[3]+'-'+headList[4]);
+								$("#acution_start_time").val(headList[6]);
+								$("#acution_end_time").val(headList[7]);
+								var auctionDateToday=headList[8];
+								$("#msg_auction_details").html(auctionDateToday)
+								if(auctionDateToday=='YES'){
+									$("#btn_auction_submit").show()
+									$("#confirmSubmit").show()
+								}else{
+									$("#btn_auction_submit").hide()
+									$("#confirmSubmit").hide()
+								}
+								
 								
 								$("#tbl_auction_details").empty()
 								
@@ -362,7 +402,11 @@ function auction_details(actionId){
 								var auctionStrData='<tr style="font-size:13px;font-weight:bold; text-shadow:none; color:#408080;" ><td >Delivery Date</td><td >Route</td><td >Vehicle Type</td><td >Number Of Vehicle</td><td>Bid/Per Vehicle</td><td style="text-align:right;"> Min Rate</td></tr>'
 								for (i=0; i < dataListLength; i++){
 									var auctionDataList=dataList[i].split('<fd>');
-									auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[2]+' <b>To</b> '+auctionDataList[3]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;text-align:center">'+auctionDataList[6]+' / '+auctionDataList[5]+'MT</td><td style="border-color:#4E9A9A;"><input type="number" id="routeIdRate_'+auctionDataList[0]+'" value="'+auctionDataList[10]+'" style="text-align:right;font-weight:bold;font-size:14px;"/></td><td style="border-color:#4E9A9A;text-align:right;"><span id="routeIdMinRateShow_'+auctionDataList[0]+'">'+auctionDataList[9]+'</span><input type="hidden" id="routeIdMinRate_'+auctionDataList[0]+'" value="'+auctionDataList[9]+'" style="text-align:right;font-weight:bold;font-size:14px;"/></td></tr>'
+									var rateValue=auctionDataList[10];
+									if(rateValue==0){
+										rateValue=''
+										}
+									auctionStrData+='<tr style="font-size:11px;border-color:#4E9A9A;"><td style="border-color:#4E9A9A;"><b>'+auctionDataList[1]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[2]+' <b>To</b> '+auctionDataList[3]+'</td><td style="border-color:#4E9A9A;">'+auctionDataList[4]+'</td><td style="border-color:#4E9A9A;text-align:center">'+auctionDataList[6]+' / '+auctionDataList[5]+'MT</td><td style="border-color:#4E9A9A;"><input type="number" id="routeIdRate_'+auctionDataList[0]+'" value="'+rateValue+'" style="text-align:right;font-weight:bold;font-size:14px;" placeholder="0"/></td><td style="border-color:#4E9A9A;text-align:right;"><span id="routeIdMinRateShow_'+auctionDataList[0]+'">'+auctionDataList[9]+'</span><input type="hidden" id="routeIdMinRate_'+auctionDataList[0]+'" value="'+auctionDataList[9]+'" style="text-align:right;font-weight:bold;font-size:14px;"/></td></tr>'
 									
 									if (detailSl==''){
 											detailSl=auctionDataList[0];
@@ -432,6 +476,11 @@ function auction_submit(){
 		}catch(e){
 			bidRate=0
 		}
+		//-------------
+		if(minRate>0 && bidRate==minRate){
+			continue;		
+		}
+		
 		//--------------
 		if(minRate>0 && bidRate>=minRate){
 			rateFlag=false;

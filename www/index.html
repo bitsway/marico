@@ -45,6 +45,73 @@
 		
 		
     </script>
+    
+<script>
+var count_down_url="http://127.0.0.1:8000/marico/syncmobile/get_count_down";
+
+ $(function() { 
+ 	$('#auction_count_down_show').html("");
+	
+	//------------------------
+	
+	
+	var myVar = setInterval(function(){myTimer()},5000);
+	
+	function myTimer() {
+		var startTime=$("#acution_start_time").val().toString().trim();//2015-11-15 13:40:00
+		var endTime=$("#acution_end_time").val().toString().trim();
+		
+		var startYear=startTime.substring(0,4)
+		var startMonth=parseInt(startTime.substring(5,7))-1
+		var startDay=startTime.substring(8,10)
+		var startHour=startTime.substring(11,13)
+		var startMin=startTime.substring(14,16)
+		var startSec=startTime.substring(17,19)
+		
+		var endYear=endTime.substring(0,4)
+		var endMonth=parseInt(endTime.substring(5,7))-1
+		var endDay=endTime.substring(8,10)
+		var endHour=endTime.substring(11,13)
+		var endMin=endTime.substring(14,16)
+		var endSec=endTime.substring(17,19)
+		
+		var newStartTimeStr=new Date(startYear,startMonth,startDay,startHour,startMin,startSec,0);
+		var newEndTimeStr=new Date(endYear,endMonth,endDay,endHour,endMin,endSec,0);
+		var newStartTime=newStartTimeStr.getTime();
+		var newEndTime=newEndTimeStr.getTime();
+		
+		if (newStartTimeStr=='Invalid Date'){		
+			$("#auction_count_down_show").html("-");			
+		}else{
+			if (newEndTimeStr=='Invalid Date'){		
+				$("#auction_count_down_show").html("-");			
+			}else{
+				var now = new Date();
+				
+				var currentTime=now.getTime();
+				
+				if (newStartTime>currentTime){
+					var timeDiffStart=newStartTime-currentTime;
+					startDueTime=new Date(timeDiffStart)
+					startDueTime=startDueTime.getUTCHours()+' H '+ startDueTime.getUTCMinutes()+' Min '+ startDueTime.getUTCSeconds()+' Sec'
+					$('#auction_count_down_show').html("Bidding time will start after "+startDueTime);				
+				}else{
+					if (newEndTime>currentTime){
+						var timeDiffEnd=newEndTime-currentTime;
+						
+						endDueTime=new Date(timeDiffEnd)
+						endDueTime=endDueTime.getUTCHours()+' H '+ endDueTime.getUTCMinutes()+' Min '+ endDueTime.getUTCSeconds()+' Sec'
+						$('#auction_count_down_show').html(endDueTime);
+					}else{
+						$('#auction_count_down_show').html("Bidding Time Over");
+						}
+				}
+			}
+		}
+	}
+  });
+  </script>
+  
     </head>
 	
     <body>
@@ -208,7 +275,10 @@
               <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Date & Time:</strong></td>
               <td style="width:70%;" ><span id="auction_date_show"></span> [<span id="auction_time_show"></span>]</td>
             </tr>
-            
+            <tr >
+              <td style="width:30%;" ><strong style="font-size:15px; color:#008040">Count Down:</strong><input type="hidden" id="acution_start_time" name="acution_start_time" value="" readonly/><input type="hidden" id="acution_end_time" name="acution_end_time" value="" readonly/></td>
+              <td style="width:70%;" ><span id="auction_count_down_show"></span></td>
+            </tr>
         </table>
         <br>
         
@@ -221,7 +291,11 @@
             </tr>
         </table>
     </div><!--/cont-->
-          
+      <br>
+<br>
+<br>
+<br>
+<br>
     <div data-theme="c" data-role="footer" data-position="fixed"></div>			
  </div><!--/page-->
  
